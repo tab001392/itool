@@ -24,11 +24,11 @@ export default async function ForkliftsPage({
 
   return (
     <ContentLayout title="Forklifts">
-      <div className="flex justify-between items-center bg-white p-4 rounded-lg shadow-sm border">
+      <div className="flex justify-between items-center p-4 rounded-lg shadow-sm border">
         {/* Left Section - Title & Description */}
         <div>
-          <h2 className="text-xl font-semibold text-gray-800">Forklifts</h2>
-          <p className="text-sm text-gray-500">
+          <h2 className="text-xl font-semibold">Forklifts</h2>
+          <p className="text-sm text-muted-foreground">
             Manage your Forklifts.
           </p>
         </div>
