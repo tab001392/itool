@@ -1,6 +1,7 @@
-import { Check, X } from "lucide-react";
+import Link from "next/link";
 import { Forklift } from "@prisma/client";
 import { redirect } from "next/navigation";
+import { Check, Scan, X, XCircle } from "lucide-react";
 import { currentUser } from "@clerk/nextjs/server";
 
 import {
@@ -15,8 +16,11 @@ import { formatDateTime } from "@/lib/utils";
 import { SearchParamProps } from "@/types";
 import { Search } from "@/components/shared/search";
 import { ContentLayout } from "@/components/shared/content-layout";
-import { getAbsentForklifts, getForklifts, getPresentForklifts } from "@/actions/forklift";
-import { ResetForkliftsConfirmation } from "./_components/reset-forklifts-confirmation";
+import {
+  getAbsentForklifts,
+  getForklifts,
+  getPresentForklifts,
+} from "@/actions/forklift";
 
 export default async function DashboardPage({
   searchParams,
@@ -40,7 +44,22 @@ export default async function DashboardPage({
           Hi {user.firstName}
           {" 👋"}
         </h3>
-        <ResetForkliftsConfirmation />
+        <div className="flex items-center space-x-2">
+          <Link
+            href="/scanner"
+            className="flex items-center space-x-1 bg-green-500 px-2 py-1 rounded-md"
+          >
+            <Scan className="w-7 h-7" />
+            <span>Start Session</span>
+          </Link>
+          <Link
+            href="/report"
+            className="flex items-center space-x-1 bg-red-500 px-2 py-1 rounded-md"
+          >
+            <XCircle className="w-7 h-7" />
+            <span>End Session</span>
+          </Link>
+        </div>
       </div>
       <div className="grid auto-rows-max items-start gap-4 md:gap-8 lg:col-span-2">
         <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4">
@@ -69,7 +88,9 @@ export default async function DashboardPage({
           <Card x-chunk="dashboard-05-chunk-3">
             <CardHeader className="pb-2">
               <CardDescription>Present Forklifts</CardDescription>
-              <CardTitle className="text-4xl">{presentForklifts.length}</CardTitle>
+              <CardTitle className="text-4xl">
+                {presentForklifts.length}
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-xs text-muted-foreground">
@@ -80,7 +101,9 @@ export default async function DashboardPage({
           <Card x-chunk="dashboard-05-chunk-4">
             <CardHeader className="pb-2">
               <CardDescription>Absent Forklifts</CardDescription>
-              <CardTitle className="text-4xl">{absentForklifts.length}</CardTitle>
+              <CardTitle className="text-4xl">
+                {absentForklifts.length}
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-xs text-muted-foreground">
@@ -126,11 +149,14 @@ export default async function DashboardPage({
                           {row.id}
                         </td>
                         <td className="min-w-[100px] py-4">{row.sku}</td>
-                        <td className="min-w-[100px] py-4">  {row.present ? (
-                          <Check className="text-green-500" />
-                        ) : (
-                          <X className="text-red-500" />
-                        )}</td>
+                        <td className="min-w-[100px] py-4">
+                          {" "}
+                          {row.present ? (
+                            <Check className="text-green-500" />
+                          ) : (
+                            <X className="text-red-500" />
+                          )}
+                        </td>
                         <td className="min-w-[100px] py-4">
                           {formatDateTime(row.createdAt!).dateTime}
                         </td>

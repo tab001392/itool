@@ -9,16 +9,12 @@ import { Button } from "@/components/ui/button";
 export const ForkliftQRCode = ({ link }: { link: string }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  // Extract the last number from the URL
-  const match = link.match(/\/(\d+)$/);
-  const id = match ? match[1] : "forklift"; // Default to "forklift" if no number is found
-
   const handleDownload = () => {
     if (canvasRef.current) {
       const url = canvasRef.current.toDataURL("image/jpeg");
       const a = document.createElement("a");
       a.href = url;
-      a.download = `forklift-qrcode-${id}.jpeg`; // Use extracted ID in filename
+      a.download = `forklift-qrcode-${link}.jpeg`;
       a.click();
     }
   };

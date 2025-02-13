@@ -76,7 +76,7 @@ export default async function ForkliftsPage({
                       <td className="min-w-[100px] py-4">{row.sku}</td>
                       <td className="min-w-[100px] py-4">
                         <ForkliftQRCode
-                          link={`${process.env.NEXT_PUBLIC_APP_URL}/forklifts/${row?.sku}`}
+                          link={row.sku}
                         />
                       </td>
                       <td className="min-w-[100px] py-4">

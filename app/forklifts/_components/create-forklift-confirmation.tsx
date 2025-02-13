@@ -21,7 +21,7 @@ export const CreateForkliftConfirmation = () => {
 
   return (
     <AlertDialog>
-      <AlertDialogTrigger className="flex items-center space-x-1 py-1 px-2 rounded-md border">
+      <AlertDialogTrigger className="flex items-center space-x-1 py-1 px-2 rounded-md border bg-green-500">
         <Plus className="w-7 h-7 mr-1" />
         <h1>Add Forklift</h1>
       </AlertDialogTrigger>
