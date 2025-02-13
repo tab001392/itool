@@ -39,24 +39,23 @@ export default async function DashboardPage({
 
   return (
     <ContentLayout title="Dashboard">
-      <div className="my-4 flex items-center justify-between">
-        <h3 className="text-2xl font-semibold tracking-tight">
-          Hi {user.firstName}
-          {" 👋"}
+      <div className="my-4 flex flex-col sm:flex-row items-center justify-between space-y-3 sm:space-y-0">
+        <h3 className="text-xl sm:text-2xl font-semibold tracking-tight text-center sm:text-left">
+          Hi {user.firstName} {" 👋"}
         </h3>
-        <div className="flex items-center space-x-2">
+        <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-2">
           <Link
             href="/scanner"
-            className="flex items-center space-x-1 bg-green-500 px-2 py-1 rounded-md"
+            className="flex items-center space-x-1 bg-green-500 px-3 py-2 rounded-md text-sm sm:text-base"
           >
-            <Scan className="w-7 h-7" />
+            <Scan className="w-5 h-5 sm:w-6 sm:h-6" />
             <span>Start Session</span>
           </Link>
           <Link
             href="/report"
-            className="flex items-center space-x-1 bg-red-500 px-2 py-1 rounded-md"
+            className="flex items-center space-x-1 bg-red-500 px-3 py-2 rounded-md text-sm sm:text-base"
           >
-            <XCircle className="w-7 h-7" />
+            <XCircle className="w-5 h-5 sm:w-6 sm:h-6" />
             <span>End Session</span>
           </Link>
         </div>
