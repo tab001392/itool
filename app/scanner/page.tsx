@@ -6,53 +6,66 @@ import {
   findForklift,
   markForkliftAsPresent,
   getForklifts,
-  resetForklifts, // Import resetForklifts action
+  resetForklifts,
 } from "@/actions/forklift";
 import { Camera, CheckCircle, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Html5QrcodeScanner } from "html5-qrcode";
+import { Html5QrcodeScanner, Html5QrcodeSupportedFormats } from "html5-qrcode";
 import { ContentLayout } from "@/components/shared/content-layout";
 
 export default function ForkliftScanner() {
   const [cameraOpen, setCameraOpen] = useState(false);
   const [scannedForklifts, setScannedForklifts] = useState<string[]>([]);
-  const [totalForklifts, setTotalForklifts] = useState<number>(0); // Start with 0
+  const [totalForklifts, setTotalForklifts] = useState<number>(0);
   const [error, setError] = useState<string | null>(null);
   const scannerRef = useRef<Html5QrcodeScanner | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const router = useRouter();
 
   useEffect(() => {
-    // Fetch the total number of forklifts dynamically from the server
     const fetchTotalForklifts = async () => {
       try {
-        const forklifts = await getForklifts({ searchString: "" }); // Fetch the forklifts from the server
-        setTotalForklifts(forklifts.length); // Set the total forklifts
+        const forklifts = await getForklifts({ searchString: "" });
+        setTotalForklifts(forklifts.length);
       } catch (err) {
         console.error("Error fetching forklifts:", err);
         setError("Error fetching forklift data.");
       }
     };
 
-    // Fetch the total forklifts
     fetchTotalForklifts();
 
     if (!cameraOpen) return;
 
-    // Request camera permission automatically when opening the camera
+    // Ensure the scanner is cleared before initializing
+    if (scannerRef.current) {
+      scannerRef.current.clear();
+      scannerRef.current = null;
+    }
+
     navigator.mediaDevices
-      .getUserMedia({ video: true })
+      .getUserMedia({
+        video: { facingMode: "environment" }, // ✅ Force back camera
+      })
       .then(() => {
-        // Initialize the QR scanner
         scannerRef.current = new Html5QrcodeScanner(
           "qr-scanner",
-          { fps: 10, qrbox: 250 },
+          {
+            fps: 10,
+            qrbox: (width, height) => {
+              const minSize = Math.min(width, height) * 0.75; // ✅ Dynamic box
+              return { width: minSize, height: minSize };
+            },
+            disableFlip: false,
+            aspectRatio: 1.5,
+            formatsToSupport: [Html5QrcodeSupportedFormats.QR_CODE],
+          },
           false
         );
 
         scannerRef.current.render(
-          async (decodedText: string) => {
+          async (decodedText) => {
             if (!scannedForklifts.includes(decodedText)) {
               await handleScan(decodedText);
             }
@@ -65,9 +78,9 @@ export default function ForkliftScanner() {
         console.error("Error accessing camera:", err);
       });
 
-    // Return cleanup function that doesn't return a promise
     return () => {
-      scannerRef.current?.clear(); // Clean up the scanner
+      scannerRef.current?.clear();
+      scannerRef.current = null;
     };
   }, [cameraOpen]);
 
@@ -95,13 +108,9 @@ export default function ForkliftScanner() {
     }
   };
 
-  // Start scanning process and reset forklifts
   const handleStartScan = async () => {
     try {
-      // Reset the forklifts before starting the scan
-      await resetForklifts(); // Call the resetForklifts server action
-
-      // Open the camera for scanning
+      await resetForklifts();
       setCameraOpen(true);
     } catch (err) {
       console.error("Error resetting forklifts:", err);
@@ -116,7 +125,7 @@ export default function ForkliftScanner() {
 
         {!cameraOpen ? (
           <Button
-            onClick={handleStartScan} // Use the updated handleStartScan
+            onClick={handleStartScan}
             className="flex items-center space-x-2"
           >
             <Camera className="w-5 h-5" />
@@ -126,7 +135,7 @@ export default function ForkliftScanner() {
           <div className="relative w-full max-w-md">
             <div
               id="qr-scanner"
-              className="w-full h-64 border rounded-lg overflow-auto"
+              className="w-full max-w-md h-[350px] border rounded-lg overflow-hidden"
             ></div>
             <Button
               onClick={() => setCameraOpen(false)}
@@ -162,7 +171,6 @@ export default function ForkliftScanner() {
           </div>
         )}
 
-        {/* Real-time Progress Bar */}
         <div className="w-full max-w-md">
           <h2 className="text-lg font-semibold mb-2">Scanning Progress</h2>
           <Progress value={(scannedForklifts.length / totalForklifts) * 100} />
@@ -171,7 +179,6 @@ export default function ForkliftScanner() {
           </p>
         </div>
 
-        {/* Beep Sound for Feedback */}
         <audio ref={audioRef} src="/beep.wav" />
       </div>
     </ContentLayout>
